@@ -9,7 +9,7 @@ async function init() {
   var x = d3.scaleLinear().domain([20000, 120000]).range([0, 500]);
   var y = d3.scaleLinear().domain([0, 1]).range([500, 0]);
 
-  data = await d3.csv("summary.csv");
+  data = await d3.csv("https://github.com/xiaofanliu77/Covid-vaccine-willingness-and-Income/blob/1027c6f3ee6bb14b73c33ac671d3cd9a96d07390/summary.csv");
   svg = d3.select("svg");
   g = svg.append("g").attr("transform", "translate("+50+","+50+")");
   g.selectAll("circle").data(data).enter().append("circle")
