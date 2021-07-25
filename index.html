@@ -3,19 +3,20 @@
 <head>
   <title>Covid Vaccination and Income: Phase 1A</title>
 </head>
-<style> circle {fill: lightblue; stroke: white;} </style>
+<style>
+circle {fill: lightblue; stroke: white; opacity: 0.5}
+</style>
 <h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
-<h3 style="font-size:15px;font-family:arial">This narrative visualization explores
+<h3 style="font-size:12px;font-family:arial">This narrative visualization explores
   possible relationship between Covid-19 vaccination willingness and their median household income.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
 </h3>
-
 <button onclick="document.location='ph1b.html'">Next Phase</button>
 <p><br></p>
+<div id="scatter_plot"></div>
 <body onload='init()'>
-<svg width=700 height=500>
-</svg>
+<svg width=700 height=500></svg>
 <script>
 async function init() {
   var x = d3.scaleLinear().domain([20000, 120000]).range([0, 600]);
@@ -27,10 +28,42 @@ async function init() {
   data = await d3.csv("https://xiaofanliu77.github.io/covac/summary.csv");
   svg = d3.select("svg");
   g = svg.append("g").attr("transform", "translate("+50+","+50+")");
+
+  var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("opacity", 0)
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "3px")
+    .style("padding", "5px");
+
+  var mouseover = function(d){
+    tooltip.style("opacity", 1)
+    .html("County: " + d.County
+    + "<br>Median Household Income: $" + d3.format(",")(d.Income)
+    + "<br>Percentage of Vaccinated Pop: " + d3.format(".2f")(d.Ph1A_percent*100)+"%")
+  };
+
+  var mousemove = function(){
+    tooltip.style("left", (d3.event.pageX+10) + "px")
+      .style("top", d3.event.pageY + "px")
+  };
+
+  var mouseout = function(){
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", 0)
+  };
+
   g.selectAll("circle").data(data).enter().append("circle")
     .attr("cx", function(d){return x(d.Income);})
     .attr("cy", function(d){return y(d.Ph1A_percent*100);})
-    .attr("r", 4);
+    .attr("r", 6)
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout);
 
   d3.select("svg").append("g")
   .attr("transform","translate("+50+","+50+")")
