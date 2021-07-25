@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
 <head>
-  <title>Covid Vaccination and Income: Phase 1A</title>
+  <title>Covid Vaccination and Income: Phase 2</title>
 </head>
-<style> circle {fill: lightblue; stroke: white;} </style>
+<style> circle {fill: red; stroke: white;} </style>
 <h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
 <h3 style="font-size:15px;font-family:arial">This narrative visualization explores
   possible relationship between Covid-19 vaccination willingness and their median household income.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
 </h3>
-
-<button onclick="document.location='ph1b.html'">Next Phase</button>
+<button onclick="document.location='ph1c.html'">Previous Phase</button>
+<button onclick="document.location='all_phases.html'">All Phases</button>
 <p><br></p>
 <body onload='init()'>
 <svg width=700 height=500>
@@ -29,7 +29,7 @@ async function init() {
   g = svg.append("g").attr("transform", "translate("+50+","+50+")");
   g.selectAll("circle").data(data).enter().append("circle")
     .attr("cx", function(d){return x(d.Income);})
-    .attr("cy", function(d){return y(d.Ph1A_percent*100);})
+    .attr("cy", function(d){return y(d.Ph2_percent*100);})
     .attr("r", 4);
 
   d3.select("svg").append("g")
@@ -47,7 +47,7 @@ async function init() {
     .attr("font-weight", 500)
     .style("font-size", "16px")
     .style("font-family", "arial")
-    .text("Phase 1A (12/14/2020 - 1/18/2021)");
+    .text("Phase 2 (3/15/2021 - 4/14/2021)");
 
   g.append("text")
     .attr("x", (width/2))
@@ -55,7 +55,7 @@ async function init() {
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-family", "arial")
-    .text("Eligibility: Healthcare staff");
+    .text("Eligibility: General population aged 16+, 12+ as of 5/13");
 
   g.append("text")
     .attr("class", "x label")
