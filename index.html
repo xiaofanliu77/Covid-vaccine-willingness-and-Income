@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 <head>
   <title>Covid Vaccination and Income: Phase 1A</title>
 </head>
 <style>
-circle {fill: lightblue; stroke: white; opacity: 0.5}
+circle {fill: deepskyblue; stroke: white; opacity: 0.5}
+.regression {
+  stroke-width: 2px;
+  stroke: steelblue;
+  stroke-dasharray: 10,5;
+}
+.footnote{
+  font-size: 12px;
+  font-family: arial;
+  color: dimgray;
+  }
 </style>
 <h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
 <h3 style="font-size:12px;font-family:arial">This narrative visualization explores
-  possible relationship between Covid-19 vaccination willingness and their median household income.
+  possible relationships between Covid-19 vaccination willingness and their median household income.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
 </h3>
 <button onclick="document.location='ph1b.html'">Next Phase</button>
 <p><br></p>
-<div id="scatter_plot"></div>
+<!-- <div id="scatter_plot"></div> -->
 <body onload='init()'>
 <svg width=700 height=500></svg>
 <script>
 async function init() {
-  var x = d3.scaleLinear().domain([20000, 120000]).range([0, 600]);
+  var x = d3.scaleLinear().domain([30000, 120000]).range([0, 600]);
   var y = d3.scaleLinear().domain([0, 100]).range([400, 0]);
   var width=700;
   var height=500;
@@ -29,6 +40,7 @@ async function init() {
   svg = d3.select("svg");
   g = svg.append("g").attr("transform", "translate("+50+","+50+")");
 
+  //tooltips for the graph
   var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
@@ -43,7 +55,8 @@ async function init() {
     tooltip.style("opacity", 1)
     .html("County: " + d.County
     + "<br>Median Household Income: $" + d3.format(",")(d.Income)
-    + "<br>Percentage of Vaccinated Pop: " + d3.format(".2f")(d.Ph1A_percent*100)+"%")
+    + "<br>Vaccinated Pop.: " + d3.format(",")(d.Ph1A)
+    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1A_percent*100)+"%")
   };
 
   var mousemove = function(){
@@ -57,6 +70,7 @@ async function init() {
       .style("opacity", 0)
   };
 
+  //scatter plot graph
   g.selectAll("circle").data(data).enter().append("circle")
     .attr("cx", function(d){return x(d.Income);})
     .attr("cy", function(d){return y(d.Ph1A_percent*100);})
@@ -65,6 +79,7 @@ async function init() {
     .on("mousemove", mousemove)
     .on("mouseout", mouseout);
 
+  //scatter plot graph axis
   d3.select("svg").append("g")
   .attr("transform","translate("+50+","+50+")")
   .call(d3.axisLeft(y));
@@ -73,9 +88,10 @@ async function init() {
   .attr("transform","translate("+50+","+450+")")
   .call(d3.axisBottom(x));
 
+  //scatter plot graph title
   g.append("text")
     .attr("x", (width/2))
-    .attr("y", 0-(margin.top/5))
+    .attr("y", -35)
     .attr("text-anchor", "middle")
     .attr("font-weight", 500)
     .style("font-size", "16px")
@@ -84,12 +100,13 @@ async function init() {
 
   g.append("text")
     .attr("x", (width/2))
-    .attr("y", 20)
+    .attr("y", -15)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-family", "arial")
-    .text("Eligibility: Healthcare staff");
+    .text("Eligibility: Healthcare staff (Very Limited Supply)");
 
+  //scatter plot graph axis labels
   g.append("text")
     .attr("class", "x label")
     .attr("x", width-margin-20)
@@ -102,13 +119,108 @@ async function init() {
   g.append("text")
     .attr("class", "y label")
     .attr("x", 0)
-    .attr("y", 0-margin*0.6)
+    .attr("y", (margin*0.3))
     .attr("text-anchor", "end")
     .attr("transform", "rotate(-90)")
     .style("font-size", "10px")
     .style("font-family", "arial")
     .text("Percentage of Population");
+
+  //scatter plot legend
+  g.append("circle")
+    .attr("cx", 40)
+    .attr("cy", 3)
+    .attr("r", 6);
+
+  g.append("text")
+    .attr("x", 55)
+    .attr("y", 7)
+    .text("County Data of Phase 1A")
+    .style("font-size", "10px")
+    .style("font-family", "arial");
+
+  //define the "trend line" with a simple linear regression. Function of calcLinear below
+  var lg = calcLinear(data, "Income", "Ph1A_percent", d3.min(data, function(d){return +d.Income;}), d3.max(data, function(d){return +d.Ph1A_percent*100;}));
+  console.log(lg);
+
+  //draw the trend line with animation
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", x(lg.ptA.x))
+    .attr("y1", y(lg.ptA.y))
+    .attr("x2", x(lg.ptA.x))
+    .attr("y2", y(lg.ptA.y))
+    .transition()
+    .duration(2000)
+    .attr("x2", x(lg.ptB.x))
+    .attr("y2", y(lg.ptB.y));
+
+  //add annotation to the trend line
+  var annotations = [
+    {
+      note: {
+        title: "Trend Line",
+        label: "Income appears to have little effect on percentage of people getting vaccinated"},
+      x: 400,
+      y: 383,
+      dx: 40,
+      dy: -40
+    }
+  ];
+  var makeAnnotations = d3.annotation().annotations(annotations);
+  g.append("g").call(makeAnnotations);
+
+  function calcLinear(data, x, y, minX, maxY){
+    var n = data.length;
+    var pts = [];
+    data.forEach(function(d,i){
+      var obj = {};
+      obj.x = +d[x];
+      obj.y = (+d[y])*100;
+      obj.mult = obj.x*obj.y;
+      pts.push(obj);
+    });
+
+    var sum = 0;
+    var xSum = 0;
+    var ySum = 0;
+    var sumSq = 0;
+    pts.forEach(function(pt){
+      sum = sum + pt.mult;
+      xSum = xSum + pt.x;
+      ySum = ySum + pt.y;
+      sumSq = sumSq + (pt.x * pt.x);
+    });
+
+
+    var a = sum * n;
+    var b = xSum * ySum;
+    var c = sumSq * n;
+    var d = xSum * xSum;
+
+    //slope m calculation
+    var m = (a - b) / (c - d);
+
+    console.log("y = " + m + "x + " + b);
+
+    var e = ySum;
+    var f = m * xSum;
+    var b = (e - f) / n;
+
+    return{
+      ptA:{
+        x: minX,
+        y: m * minX + b
+      },
+      ptB:{
+        y: maxY,
+        x: (maxY - b) / m
+      }
+    };
+  };
+
 }
 </script>
+<p class="footnote">Data Sources:</p>
 </body>
 </html>
