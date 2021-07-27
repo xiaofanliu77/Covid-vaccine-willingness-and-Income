@@ -8,7 +8,7 @@
 circle {fill: deepskyblue; stroke: white; opacity: 0.5}
 .regression {
   stroke-width: 2px;
-  stroke: steelblue;
+  stroke: dodgerblue;
   stroke-dasharray: 10,5;
 }
 .footnote{
@@ -16,6 +16,10 @@ circle {fill: deepskyblue; stroke: white; opacity: 0.5}
   font-family: arial;
   color: dimgray;
   }
+.annotation-note{
+  font-size: 14px;
+  font-family: arial;
+}
 </style>
 <h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
 <h3 style="font-size:12px;font-family:arial">This narrative visualization explores
@@ -56,7 +60,8 @@ async function init() {
     .html("County: " + d.County
     + "<br>Median Household Income: $" + d3.format(",")(d.Income)
     + "<br>Vaccinated Pop.: " + d3.format(",")(d.Ph1A)
-    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1A_percent*100)+"%")
+    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1A_percent*100)+"%");
+    d3.select(this).style('opacity', 1)
   };
 
   var mousemove = function(){
@@ -67,7 +72,8 @@ async function init() {
   var mouseout = function(){
     tooltip.transition()
       .duration(200)
-      .style("opacity", 0)
+      .style("opacity", 0);
+    d3.select(this).style('opacity', 0.5)
   };
 
   //scatter plot graph
@@ -108,7 +114,6 @@ async function init() {
 
   //scatter plot graph axis labels
   g.append("text")
-    .attr("class", "x label")
     .attr("x", width-margin-20)
     .attr("y", height-margin-20)
     .attr("text-anchor", "end")
@@ -117,7 +122,6 @@ async function init() {
     .text("Median Household Income 2018 (US dollors)");
 
   g.append("text")
-    .attr("class", "y label")
     .attr("x", 0)
     .attr("y", (margin*0.3))
     .attr("text-anchor", "end")
@@ -139,6 +143,20 @@ async function init() {
     .style("font-size", "10px")
     .style("font-family", "arial");
 
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", 25)
+    .attr("y1", 23)
+    .attr("x2", 55)
+    .attr("y2", 23);
+
+  g.append("text")
+    .attr("x", 55)
+    .attr("y", 27)
+    .text("Trend Line of Phase 1A")
+    .style("font-size", "10px")
+    .style("font-family", "arial");
+
   //define the "trend line" with a simple linear regression. Function of calcLinear below
   var lg = calcLinear(data, "Income", "Ph1A_percent", d3.min(data, function(d){return +d.Income;}), d3.max(data, function(d){return +d.Ph1A_percent*100;}));
   console.log(lg);
@@ -151,7 +169,7 @@ async function init() {
     .attr("x2", x(lg.ptA.x))
     .attr("y2", y(lg.ptA.y))
     .transition()
-    .duration(2000)
+    .duration(2500)
     .attr("x2", x(lg.ptB.x))
     .attr("y2", y(lg.ptB.y));
 
@@ -159,16 +177,17 @@ async function init() {
   var annotations = [
     {
       note: {
-        title: "Trend Line",
-        label: "Income appears to have little effect on percentage of people getting vaccinated"},
+        label: "Income has little effect on percentage of vaccinated population"},
       x: 400,
       y: 383,
       dx: 40,
-      dy: -40
+      dy: -40,
+      type: d3.annotationCalloutElbow,
+      connector: {end: "arrow"}
     }
   ];
   var makeAnnotations = d3.annotation().annotations(annotations);
-  g.append("g").call(makeAnnotations);
+  g.append("g").attr("class", "annotation-group").call(makeAnnotations);
 
   function calcLinear(data, x, y, minX, maxY){
     var n = data.length;
@@ -221,6 +240,10 @@ async function init() {
 
 }
 </script>
-<p class="footnote">Data Sources:</p>
+<p class="footnote">Data Sources:<br>California Median Household Income 2018:
+  <a href="https://www.indexmundi.com/facts/united-states/quick-facts/california/median-household-income#table">indexmundi.com<br></a>
+  California COVID-19 Vaccines Administered By County:
+  <a href="https://data.chhs.ca.gov/dataset/vaccine-progress-dashboard/resource/130d7ba2-b6eb-438d-a412-741bde207e1c">California Health and Human Services Open Data Portal</a>
+</p>
 </body>
 </html>

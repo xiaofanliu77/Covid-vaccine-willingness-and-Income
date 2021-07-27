@@ -1,24 +1,41 @@
 <!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 <head>
   <title>Covid Vaccination and Income: Phase 1B</title>
 </head>
-<style> circle {fill: lightgreen; stroke: white;} </style>
+<style>
+circle {fill: mediumseagreen; stroke: white; opacity: 0.5}
+.regression {
+  stroke-width: 2px;
+  stroke: darkgreen;
+  stroke-dasharray: 10,5;
+}
+.footnote{
+  font-size: 12px;
+  font-family: arial;
+  color: dimgray;
+  }
+.annotation-note{
+  font-size: 14px;
+  font-family: arial;
+}
+</style>
 <h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
-<h3 style="font-size:15px;font-family:arial">This narrative visualization explores
-  possible relationship between Covid-19 vaccination willingness and their median household income.
+<h3 style="font-size:12px;font-family:arial">This narrative visualization explores
+  possible relationships between Covid-19 vaccination willingness and their median household income.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
 </h3>
 <button onclick="document.location='index.html'">Previous Phase</button>
 <button onclick="document.location='ph1c.html'">Next Phase</button>
 <p><br></p>
+<!-- <div id="scatter_plot"></div> -->
 <body onload='init()'>
-<svg width=700 height=500>
-</svg>
+<svg width=700 height=500></svg>
 <script>
 async function init() {
-  var x = d3.scaleLinear().domain([20000, 120000]).range([0, 600]);
+  var x = d3.scaleLinear().domain([30000, 120000]).range([0, 600]);
   var y = d3.scaleLinear().domain([0, 100]).range([400, 0]);
   var width=700;
   var height=500;
@@ -27,11 +44,49 @@ async function init() {
   data = await d3.csv("https://xiaofanliu77.github.io/covac/summary.csv");
   svg = d3.select("svg");
   g = svg.append("g").attr("transform", "translate("+50+","+50+")");
+
+  //tooltips for the graph
+  var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("opacity", 0)
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "3px")
+    .style("padding", "5px");
+
+  var mouseover = function(d){
+    tooltip.style("opacity", 1)
+    .html("County: " + d.County
+    + "<br>Median Household Income: $" + d3.format(",")(d.Income)
+    + "<br>Vaccinated Pop.: " + d3.format(",")(d.Ph1A)
+    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1A_percent*100)+"%");
+    d3.select(this).style('opacity', 1)
+  };
+
+  var mousemove = function(){
+    tooltip.style("left", (d3.event.pageX+10) + "px")
+      .style("top", d3.event.pageY + "px")
+  };
+
+  var mouseout = function(){
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", 0);
+    d3.select(this).style('opacity', 0.5)
+  };
+
+  //scatter plot graph
   g.selectAll("circle").data(data).enter().append("circle")
     .attr("cx", function(d){return x(d.Income);})
     .attr("cy", function(d){return y(d.Ph1B_percent*100);})
-    .attr("r", 4);
+    .attr("r", 6)
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout);
 
+  //scatter plot graph axis
   d3.select("svg").append("g")
   .attr("transform","translate("+50+","+50+")")
   .call(d3.axisLeft(y));
@@ -40,9 +95,10 @@ async function init() {
   .attr("transform","translate("+50+","+450+")")
   .call(d3.axisBottom(x));
 
+  //scatter plot graph title
   g.append("text")
     .attr("x", (width/2))
-    .attr("y", 0-(margin.top/5))
+    .attr("y", -35)
     .attr("text-anchor", "middle")
     .attr("font-weight", 500)
     .style("font-size", "16px")
@@ -51,12 +107,13 @@ async function init() {
 
   g.append("text")
     .attr("x", (width/2))
-    .attr("y", 20)
+    .attr("y", -15)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-family", "arial")
     .text("Eligibility: Persons aged 65 years+, essential workers");
 
+  //scatter plot graph axis labels
   g.append("text")
     .attr("class", "x label")
     .attr("x", width-margin-20)
@@ -69,13 +126,151 @@ async function init() {
   g.append("text")
     .attr("class", "y label")
     .attr("x", 0)
-    .attr("y", 0-margin*0.6)
+    .attr("y", (margin*0.3))
     .attr("text-anchor", "end")
     .attr("transform", "rotate(-90)")
     .style("font-size", "10px")
     .style("font-family", "arial")
     .text("Percentage of Population");
+
+  //scatter plot legend
+  g.append("circle")
+    .attr("cx", 40)
+    .attr("cy", 3)
+    .attr("r", 6);
+
+  g.append("text")
+    .attr("x", 55)
+    .attr("y", 7)
+    .text("County Data of Phase 1B")
+    .style("font-size", "10px")
+    .style("font-family", "arial");
+
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", 25)
+    .attr("y1", 23)
+    .attr("x2", 55)
+    .attr("y2", 23);
+
+  g.append("text")
+    .attr("x", 55)
+    .attr("y", 27)
+    .text("Trend Line of Phase 1B")
+    .style("font-size", "10px")
+    .style("font-family", "arial");
+
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", 25)
+    .attr("y1", 43)
+    .attr("x2", 55)
+    .attr("y2", 43)
+    .style("stroke", "dodgerblue");
+
+  g.append("text")
+    .attr("x", 55)
+    .attr("y", 47)
+    .text("Trend Line of Phase 1A")
+    .style("font-size", "10px")
+    .style("font-family", "arial");
+
+  //define the "trend line" with a simple linear regression. Function of calcLinear below
+  var lg = calcLinear(data, "Income", "Ph1B_percent", d3.min(data, function(d){return +d.Income;}), d3.max(data, function(d){return +d.Ph1B_percent*100;}));
+  var lgA = calcLinear(data, "Income", "Ph1A_percent", d3.min(data, function(d){return +d.Income;}), d3.max(data, function(d){return +d.Ph1A_percent*100;}));
+  console.log(lgA);
+
+  //draw the trend line with animation
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", x(lg.ptA.x))
+    .attr("y1", y(lg.ptA.y))
+    .attr("x2", x(lg.ptA.x))
+    .attr("y2", y(lg.ptA.y))
+    .transition()
+    .duration(2500)
+    .attr("x2", x(lg.ptB.x))
+    .attr("y2", y(lg.ptB.y));
+
+  g.append("line")
+    .attr("class", "regression")
+    .attr("x1", x(lgA.ptA.x))
+    .attr("y1", y(lgA.ptA.y))
+    .attr("x2", x(lgA.ptB.x))
+    .attr("y2", y(lgA.ptB.y))
+    .style("stroke", "dodgerblue");
+
+  //add annotation to the trend line
+  var annotations = [
+    {
+      note: {
+        label: "Income has some positive influence on percentage of vaccinated population"},
+      x: 400,
+      y: 285,
+      dx: 40,
+      dy: -40,
+      type: d3.annotationCalloutElbow,
+      connector: {end: "arrow"}
+    }
+  ];
+  var makeAnnotations = d3.annotation().annotations(annotations);
+  g.append("g").attr("class", "annotation-group").call(makeAnnotations);
+
+  function calcLinear(data, x, y, minX, maxY){
+    var n = data.length;
+    var pts = [];
+    data.forEach(function(d,i){
+      var obj = {};
+      obj.x = +d[x];
+      obj.y = (+d[y])*100;
+      obj.mult = obj.x*obj.y;
+      pts.push(obj);
+    });
+
+    var sum = 0;
+    var xSum = 0;
+    var ySum = 0;
+    var sumSq = 0;
+    pts.forEach(function(pt){
+      sum = sum + pt.mult;
+      xSum = xSum + pt.x;
+      ySum = ySum + pt.y;
+      sumSq = sumSq + (pt.x * pt.x);
+    });
+
+
+    var a = sum * n;
+    var b = xSum * ySum;
+    var c = sumSq * n;
+    var d = xSum * xSum;
+
+    //slope m calculation
+    var m = (a - b) / (c - d);
+
+    console.log("y = " + m + "x + " + b);
+
+    var e = ySum;
+    var f = m * xSum;
+    var b = (e - f) / n;
+
+    return{
+      ptA:{
+        x: minX,
+        y: m * minX + b
+      },
+      ptB:{
+        y: maxY,
+        x: (maxY - b) / m
+      }
+    };
+  };
+
 }
 </script>
+<p class="footnote">Data Sources:<br>California Median Household Income 2018:
+  <a href="https://www.indexmundi.com/facts/united-states/quick-facts/california/median-household-income#table">indexmundi.com<br></a>
+  California COVID-19 Vaccines Administered By County:
+  <a href="https://data.chhs.ca.gov/dataset/vaccine-progress-dashboard/resource/130d7ba2-b6eb-438d-a412-741bde207e1c">California Health and Human Services Open Data Portal</a>
+</p>
 </body>
 </html>
