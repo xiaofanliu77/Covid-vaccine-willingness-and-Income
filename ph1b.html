@@ -60,8 +60,8 @@ async function init() {
     tooltip.style("opacity", 1)
     .html("County: " + d.County
     + "<br>Median Household Income: $" + d3.format(",")(d.Income)
-    + "<br>Vaccinated Pop.: " + d3.format(",")(d.Ph1A)
-    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1A_percent*100)+"%");
+    + "<br>Vaccinated Pop.: " + d3.format(",")(d.Ph1B)
+    + "<br>Percentage of Vaccinated Pop.: " + d3.format(".2f")(d.Ph1B_percent*100)+"%");
     d3.select(this).style('opacity', 1)
   };
 
