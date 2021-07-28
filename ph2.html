@@ -2,7 +2,7 @@
 <script src='https://d3js.org/d3.v5.min.js'></script>
 <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 <head>
-  <title>Covid Vaccination and Income: Phase 2</title>
+  <title>COVID Vaccination Willingness: Phase 2</title>
 </head>
 <style>
 circle {fill: darkgoldenrod; stroke: white; opacity: 0.5}
@@ -24,17 +24,19 @@ th, td {
   font-size: 12px;
   font-family: arial;
   color: dimgray;
+  margin-left: 25px;
   }
 .annotation-note{
   font-size: 14px;
   font-family: arial;
 }
 </style>
-<h2 style="font-family:helvetica; margin-left:25px">Does Income Influence Covid-19 Vaccination Willingness?</h2>
-<h3 style="font-size:12px;font-family:arial; margin-left:25px; margin-right:25px">This narrative visualization explores
-  possible relationships between Covid-19 vaccination willingness and their median household income.
+<h2 style="font-family:helvetica; margin-left:25px">COVID-19 Vaccination Willingness in California</h2>
+<h3 style="font-size:12px;font-family:arial; margin-left:25px; margin-right:25px">
+  This narrative visualization explores
+  possible relationships between COVID-19 vaccination willingness and their median household income in California.
   Vaccination willingness is measured by percentage of people getting at least one dose of
-  any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
+  any type of vaccine in each county and in each vaccine distribution phase.
 </h3>
 <button onclick="document.location='ph1c.html'" style="margin-left:50px;">< Previous Phase</button>
 <button onclick="document.location='index.html'" style="margin-left:340px">Return to Beginning</button>
@@ -340,6 +342,9 @@ async function init() {
 
 }
 </script>
+<p style="font-family: arial; font-size: 15px; margin-left: 25px">
+  Navigation Tip: Move cursor over each dot for more detailed information of each county.
+</p>
 <p class="footnote">Data Sources:<br>California Median Household Income 2018:
   <a href="https://www.indexmundi.com/facts/united-states/quick-facts/california/median-household-income#table">indexmundi.com<br></a>
   California COVID-19 Vaccines Administered By County:
