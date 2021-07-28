@@ -6,6 +6,15 @@
 </head>
 <style>
 circle {fill: mediumseagreen; stroke: white; opacity: 0.5}
+table, th, td {
+  border: 1px solid darkgray;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 3px;
+  text-align: center;
+  font-family: arial;
+}
 .regression {
   stroke-width: 2px;
   stroke: darkgreen;
@@ -21,15 +30,32 @@ circle {fill: mediumseagreen; stroke: white; opacity: 0.5}
   font-family: arial;
 }
 </style>
-<h2 style="font-family:helvetica">Does Income Influence Covid-19 Vaccination Willingness?</h2>
-<h3 style="font-size:12px;font-family:arial">This narrative visualization explores
+<h2 style="font-family:helvetica; margin-left: 25px" >Does Income Influence Covid-19 Vaccination Willingness?</h2>
+<h3 style="font-size:12px;font-family:arial; margin-left: 25px; margin-right: 25px">This narrative visualization explores
   possible relationships between Covid-19 vaccination willingness and their median household income.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in all 58 California counties, in Phase 1A, 1B, 1C and 2(current, as of 7/20/2021) of vaccine distribution.
 </h3>
-<button onclick="document.location='index.html'">Previous Phase</button>
-<button onclick="document.location='ph1c.html'">Next Phase</button>
-<p><br></p>
+<button onclick="document.location='index.html'" style="margin-left:50px;">< Previous Phase</button>
+<button onclick="document.location='ph1c.html'" style="margin-left:380px">Next Phase ></button>
+<table style="width:600px; margin-left:50px; margin-top:10px; margin-bottom: 20px">
+  <tr>
+    <th>2020</th>
+    <th colspan="8">2021</th>
+  </tr>
+  <tr>
+    <td style="background-color: darkgray">Dec</td>
+    <td style="background-color: darkgray">Jan</td>
+    <td style="background-color: darkgray">Feb</td>
+    <td style="background-color: darkgray">Mar</td>
+    <td>Apr</td>
+    <td>May</td>
+    <td>June</td>
+    <td>July</td>
+    <td>Aug</td>
+  </tr>
+</table>
+<!-- <p><br></p> -->
 <!-- <div id="scatter_plot"></div> -->
 <body onload='init()'>
 <svg width=700 height=500></svg>
