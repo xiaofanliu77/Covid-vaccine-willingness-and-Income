@@ -32,11 +32,11 @@ th, td {
 }
 </style>
 <h2 style="font-family:helvetica; margin-left: 25px" >COVID-19 Vaccination Willingness in California</h2>
-<h3 style="font-size:12px;font-family:arial; margin-left: 25px; margin-right: 25px">
-  This narrative visualization explores
-possible relationships between COVID-19 vaccination willingness and their median household income in California.
-Vaccination willingness is measured by percentage of people getting at least one dose of
-any type of vaccine in each county and in each vaccine distribution phase.
+<h3 style="font-size:14px;font-family:arial; color: dimgray; margin-left: 25px; margin-right: 25px">
+  Does income have any influence on people's decisions when it comes to getting a covid vaccine?
+  This narrative visualization explores possible relationships between vaccination willingness and income in California.
+  Vaccination willingness is measured by percentage of people getting at least one dose of
+  any type of vaccine in each county.
 </h3>
 <button onclick="document.location='index.html'" style="margin-left:50px;">< Previous Phase</button>
 <button onclick="document.location='ph1c.html'" style="margin-left:380px">Next Phase ></button>
@@ -128,9 +128,10 @@ async function init() {
     .attr("x", (width/2))
     .attr("y", -35)
     .attr("text-anchor", "middle")
-    .attr("font-weight", 500)
+    .attr("font-weight", 800)
     .style("font-size", "16px")
     .style("font-family", "arial")
+    .style("fill", "darkgreen")
     .text("Phase 1B (1/19/2021 - 3/14/2021)");
 
   g.append("text")
