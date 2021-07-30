@@ -5,7 +5,15 @@
   <title>COVID Vaccination Willingness: Phase 1A</title>
 </head>
 <style>
+#limit {
+  max-width: 800px;
+}
+
 circle {fill: deepskyblue; stroke: white; opacity: 0.5}
+p {
+  font-size: 14px;
+  font-family: arial;
+}
 table, th, td {
   border: 1px solid darkgray;
   border-collapse: collapse;
@@ -24,23 +32,36 @@ th, td {
   font-size: 12px;
   font-family: arial;
   color: dimgray;
-  margin-left: 25px;
+  margin-left: 50px;
   }
 .annotation-note{
   font-size: 14px;
   font-family: arial;
 }
+.pull-left{
+  float: left;
+}
+.pull-right{
+  float: right;
+}
 </style>
-<h2 style="font-family:helvetica; margin-left: 25px">COVID-19 Vaccination Willingness in California</h2>
-<h3 style="font-size:14px;font-family:arial; color: dimgray; margin-left: 25px; margin-right: 25px">
+<h2 style="font-family:helvetica; margin-left: 50px">COVID-19 Vaccination Willingness in California</h2>
+
+<div id="limit">
+<p style="font-size:14px; color: dimgray; margin-left: 50px; margin-right: 50px">
   Does income have any influence on people's decisions when it comes to getting a covid vaccine?
   This narrative visualization explores possible relationships between vaccination willingness and income in California.
   Vaccination willingness is measured by percentage of people getting at least one dose of
   any type of vaccine in each county.
-</h3>
-<button type="button" disabled style="margin-left:50px;">< Previous Phase</button>
-<button onclick="document.location='ph1b.html'", style="margin-left:380px">Next Phase ></button>
-<table style="width:600px; margin-left:50px; margin-top:10px; margin-bottom: 20px">
+</p>
+<p style="text-align: center; font-size: 16px; color:dodgerblue; font-weight: 800">
+<button class="pull-left" type="button" disabled style="margin-left:50px;">< Previous Phase</button>
+Phase 1A (12/14/2020 - 1/18/2021)
+<button class="pull-right" onclick="document.location='ph1b.html'" style="margin-right:50px">Next Phase ></button>
+</p>
+</div>
+
+<table style="width:700px; margin-left:50px; margin-top:10px; margin-bottom: 10px">
   <tr>
     <th>2020</th>
     <th colspan="8">2021</th>
@@ -57,8 +78,9 @@ th, td {
     <td>Aug</td>
   </tr>
 </table>
-<!-- <p><br></p> -->
-<!-- <div id="scatter_plot"></div> -->
+
+<p style="margin-left: 50px">Phase 1A Eligibility: Healthcare staff (Very Limited Supply)</p>
+
 <body onload='init()'>
 <svg width=700 height=500></svg>
 <script>
@@ -123,24 +145,13 @@ async function init() {
   .attr("transform","translate("+50+","+450+")")
   .call(d3.axisBottom(x));
 
-  //scatter plot graph title
-  g.append("text")
-    .attr("x", (width/2))
-    .attr("y", -35)
-    .attr("text-anchor", "middle")
-    .attr("font-weight", 800)
-    .style("font-size", "16px")
-    .style("font-family", "arial")
-    .style("fill", "dodgerblue")
-    .text("Phase 1A (12/14/2020 - 1/18/2021)");
-
-  g.append("text")
-    .attr("x", (width/2))
-    .attr("y", -15)
-    .attr("text-anchor", "middle")
-    .style("font-size", "14px")
-    .style("font-family", "arial")
-    .text("Eligibility: Healthcare staff (Very Limited Supply)");
+  // g.append("text")
+  //   .attr("x", (width/2))
+  //   .attr("y", -15)
+  //   .attr("text-anchor", "middle")
+  //   .style("font-size", "14px")
+  //   .style("font-family", "arial")
+  //   .text("Eligibility: Healthcare staff (Very Limited Supply)");
 
   //scatter plot graph axis labels
   g.append("text")
@@ -270,7 +281,7 @@ async function init() {
 
 }
 </script>
-<p style="font-family: arial; font-size: 15px; margin-left: 25px">
+<p style="font-family: arial; font-size: 14px; margin-left: 50px">
   Navigation Tip: Move cursor over each dot for more detailed information of each county.
 </p>
 <p class="footnote">Data Sources:<br>California Median Household Income 2018:
